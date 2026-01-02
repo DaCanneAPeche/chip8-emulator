@@ -22,3 +22,7 @@ Was only tested with the hearth monitor exemple for now (with no sound).
 - Cross platform and customizable sleeping.
 
 - Enter program path & zoom after compilation.
+
+- switching from char to uint8_t
+
+- Make timers go down slower than the running clock (constant 60 Hz)

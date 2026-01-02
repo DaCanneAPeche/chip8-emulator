@@ -7,6 +7,7 @@
 #include "renderer.h"
 #include "registers.h"
 #include "subroutines.h"
+#include "timers.h"
 
 unsigned char combine2Nibbles(char first, char second)
 {
@@ -25,9 +26,9 @@ int unsupported()
   return -1;
 }
 
-void soundInstruction()
+void setSoundTimer(Timers* timers, Registers* registers, int Vindex)
 {
-  printf("All instructions related to sound will be added later\n");
+  timers->sound = (uint8_t)registers->V[Vindex];
 }
 
 void storeInRegisterV(char Vindex, char firstNibble, char secondNibble, Registers* registers)
@@ -128,7 +129,7 @@ void extractNibbles(char nibbles[4], unsigned short opcode)
 }
 
 int interpretInstuction(unsigned short instruction, Renderer* renderer,
-    Registers* registers, char* memory, int* PC)
+    Registers* registers, Timers* timers, char* memory, int* PC)
 {
   char nibbles[4];
   extractNibbles(nibbles, instruction);
@@ -166,7 +167,7 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
     case 0xF:
       switch (combine2Nibbles(nibbles[2], nibbles[3]))
       {
-        case 0x18: soundInstruction(); break;
+        case 0x18: setSoundTimer(timers, registers, nibbles[1]); break;
         default: return unsupported();
       }
       break;

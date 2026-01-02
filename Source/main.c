@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <unistd.h>
+
 #include "renderer.h"
 #include "vector.h"
 #include "instructions.h"
 #include "registers.h"
-#include <unistd.h>
+#include "timers.h"
+#include "audio_manager.h"
 
 const int ZOOM = 7;
 
@@ -36,13 +39,14 @@ void printMemory(char* memory, size_t length)
   printf("\n");
 }
 
-void run(Renderer* renderer)
+void run(Renderer* renderer, AudioManager* audioManager)
 {
   bool running = true;
   //char memory[RAM_SIZE];
   char* memory = malloc(RAM_SIZE);
   int PC = PROGRAM_START_ADRESS;
   Registers registers;
+  Timers timers = {0, 0};
   
   loadProgram("./exemple_programs/heartmonitor/heart_monitor.ch8", memory + PROGRAM_START_ADRESS);
   clearScreen(renderer);
@@ -62,9 +66,18 @@ void run(Renderer* renderer)
     }
 
     unsigned short instruction = readNextInstruction(&PC, memory);
-    printf("%i : 0x%04X\n", PC, instruction); 
-    int result = interpretInstuction(instruction, renderer, &registers, memory, &PC);
+    // printf("%i : 0x%04X\n", PC, instruction); 
+    int result = interpretInstuction(instruction, renderer, &registers, &timers,
+      memory, &PC);
     if (result == -1) running = false;
+
+    if (timers.sound > 0)
+    {
+      timers.sound--; // Before the sound is emitted since a sound timer set to 0x1 is ignored
+      audioManager->playSound = true;
+    } else audioManager->playSound = false;
+
+    if (timers.delay > 0) timers.delay--;
 
     int rmask, gmask, bmask;
     getRGBMasks(&rmask, &bmask, &gmask);
@@ -87,13 +100,23 @@ int main(int argc, char** argv)
 
   if(SDL_Init(SDL_INIT_VIDEO) < 0)
   {
-    printf("SDL could not be initialized!\n"
+    printf("SDL image could not be initialized!\n"
+        "SDL_Error: %s\n", SDL_GetError());
+    return 0;
+  }
+
+  if(SDL_Init(SDL_INIT_AUDIO) < 0)
+  {
+    printf("SDL audio could not be initialized!\n"
         "SDL_Error: %s\n", SDL_GetError());
     return 0;
   }
 
   Vec2i size = {64, 32};
   Renderer renderer = initRenderer("Hello, world !", size, ZOOM);
-  run(&renderer);
+  AudioManager audioManager;
+  initAudioManager(&audioManager);
+    
+  run(&renderer, &audioManager);
   destroyRenderer(&renderer);
 }
