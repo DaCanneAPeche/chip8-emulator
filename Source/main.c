@@ -6,6 +6,8 @@
 #include "registers.h"
 #include <unistd.h>
 
+const int ZOOM = 7;
+
 // in bytes
 const size_t RAM_SIZE = 0xFFF;
 const size_t PROGRAM_START_ADRESS = 0x200;
@@ -45,6 +47,9 @@ void run(Renderer* renderer)
   loadProgram("./exemple_programs/heartmonitor/heart_monitor.ch8", memory + PROGRAM_START_ADRESS);
   clearScreen(renderer);
 
+  SDL_Rect sourceRect = {0, 0, 64, 32};
+  SDL_Rect upscaledRect = {0, 0, 64 * ZOOM, 32 * ZOOM};
+
   while (running)
   {
     SDL_Event event;
@@ -69,9 +74,10 @@ void run(Renderer* renderer)
 
     SDL_RenderClear(renderer->renderer);
     renderer->texture = SDL_CreateTextureFromSurface(renderer->renderer, renderer->surface);
-    SDL_RenderCopy(renderer->renderer, renderer->texture, NULL, NULL);
+
+    SDL_RenderCopy(renderer->renderer, renderer->texture, &sourceRect, &upscaledRect);
     SDL_RenderPresent(renderer->renderer);
-    usleep(10 * 1000);
+    usleep(1 * 1000);
   }
 }
 
@@ -87,7 +93,7 @@ int main(int argc, char** argv)
   }
 
   Vec2i size = {64, 32};
-  Renderer renderer = initRenderer("Hello, world !", size);
+  Renderer renderer = initRenderer("Hello, world !", size, ZOOM);
   run(&renderer);
   destroyRenderer(&renderer);
 }

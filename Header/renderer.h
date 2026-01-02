@@ -37,11 +37,11 @@ void getRGBMasks(int* rmask, int* gmask, int* bmask)
 #endif
 }
 
-struct Renderer initRenderer(char* windowTitle, Vec2i windowSize)
+struct Renderer initRenderer(char* windowTitle, Vec2i renderingSize, int zoom)
 {
-	struct Renderer renderer = {NULL, NULL, NULL, NULL, NULL, windowTitle, windowSize};
+	struct Renderer renderer = {NULL, NULL, NULL, NULL, NULL, windowTitle, renderingSize};
 
-	renderer.window = SDL_CreateWindow(renderer.title, 0, 0, renderer.size.x, renderer.size.y, 0);
+	renderer.window = SDL_CreateWindow(renderer.title, 0, 0, renderer.size.x * zoom, renderer.size.y * zoom, 0);
   renderer.renderer = SDL_CreateRenderer(renderer.window, -1, SDL_RENDERER_ACCELERATED);
   renderer.framebuffer = malloc((size_t)renderer.size.x * (size_t)renderer.size.y * sizeof(Pixel));
 

@@ -15,6 +15,10 @@ Install it and then use the `xmake` command to compile and run with `xmake run`.
 - Implement remaining instructions (eg. sound and inputs) ;
 Was only tested with the hearth monitor exemple for now (with no sound).
 
-- Upscale the screen.
-
 - Infinite subroutine stack.
+
+- handle sprites rendered outside the screen
+
+- Cross platform and customizable sleeping.
+
+- Enter program path & zoom after compilation.
