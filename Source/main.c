@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "renderer.h"
 #include "vector.h"
@@ -17,6 +18,8 @@ const size_t PROGRAM_START_ADRESS = 0x200;
 const size_t VARIABLE_AND_DISPLAY_RAM_SIZE = 0x160;
 
 const size_t PROGRAM_SIZE = RAM_SIZE - VARIABLE_AND_DISPLAY_RAM_SIZE - PROGRAM_START_ADRESS;
+
+const double TIMER_SPEED_HZ = 60;
 
 void loadProgram(char* path, char* program)
 {
@@ -39,10 +42,17 @@ void printMemory(char* memory, size_t length)
   printf("\n");
 }
 
+
+double getTimeInMilliseconds()
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);  // monotonic clock
+    return ts.tv_sec * 1000.0 + ts.tv_nsec / 1.0e6;  // ms
+}
+
 void run(Renderer* renderer, AudioManager* audioManager)
 {
   bool running = true;
-  //char memory[RAM_SIZE];
   char* memory = malloc(RAM_SIZE);
   int PC = PROGRAM_START_ADRESS;
   Registers registers;
@@ -53,6 +63,8 @@ void run(Renderer* renderer, AudioManager* audioManager)
 
   SDL_Rect sourceRect = {0, 0, 64, 32};
   SDL_Rect upscaledRect = {0, 0, 64 * ZOOM, 32 * ZOOM};
+
+  double formerTime = getTimeInMilliseconds()/1000;
 
   while (running)
   {
@@ -71,13 +83,24 @@ void run(Renderer* renderer, AudioManager* audioManager)
       memory, &PC);
     if (result == -1) running = false;
 
+    double newTime = getTimeInMilliseconds();
+    double elapsedTime = newTime - formerTime;
+    double simulatedClockElapsedTime = elapsedTime/1000 * TIMER_SPEED_HZ;
+    formerTime = newTime;
+
     if (timers.sound > 0)
     {
-      timers.sound--; // Before the sound is emitted since a sound timer set to 0x1 is ignored
+      // Before the sound is emitted since a sound timer set to 0x1 is ignored
+      timers.sound -= simulatedClockElapsedTime;
       audioManager->playSound = true;
-    } else audioManager->playSound = false;
+    } else
+    {
+      timers.sound = 0;
+      audioManager->playSound = false;
+    }
 
-    if (timers.delay > 0) timers.delay--;
+    if (timers.delay > 0) timers.delay -= simulatedClockElapsedTime;
+    else timers.delay = 0;
 
     int rmask, gmask, bmask;
     getRGBMasks(&rmask, &bmask, &gmask);

@@ -5,7 +5,7 @@
 
 typedef struct Timers
 {
-  uint8_t delay, sound; 
+  float delay, sound; // As a float to simulate clock != from the program speed
 } Timers;
 
 #endif
