@@ -8,6 +8,7 @@
 #include "registers.h"
 #include "subroutines.h"
 #include "timers.h"
+#include "input_manager.hpp"
 
 unsigned char combine2Nibbles(char first, char second)
 {
@@ -44,6 +45,11 @@ void storeInRegisterI(char firstNibble, char secondNibble, char thirdNibble, Reg
 void addToRegisterV(char Vindex, unsigned char amount, Registers* registers)
 {
   registers->V[Vindex] += amount;
+}
+
+void addVxToI(char Vindex, Registers* registers)
+{
+  registers->I += registers->V[Vindex];
 }
 
 void drawSprite(int vx, int vy, int byteLength, Renderer* renderer,
@@ -119,6 +125,11 @@ void endOFSubroutine(int* PC)
   *PC = popSubroutine();
 }
 
+void waitForInput(InputManager* inputManager)
+{
+  inputManager->waitForInput = true;
+}
+
 // Extract hexadecimal "figures"
 void extractNibbles(char nibbles[4], unsigned short opcode)
 {
@@ -129,7 +140,8 @@ void extractNibbles(char nibbles[4], unsigned short opcode)
 }
 
 int interpretInstuction(unsigned short instruction, Renderer* renderer,
-    Registers* registers, Timers* timers, char* memory, int* PC)
+    Registers* registers, Timers* timers, InputManager* inputManager,
+    char* memory, int* PC)
 {
   char nibbles[4];
   extractNibbles(nibbles, instruction);
@@ -167,7 +179,9 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
     case 0xF:
       switch (combine2Nibbles(nibbles[2], nibbles[3]))
       {
+        case 0x0A: waitForInput(inputManager); break;
         case 0x18: setSoundTimer(timers, registers, nibbles[1]); break;
+        case 0x1E: addVxToI(nibbles[1], registers); break;
         default: return unsupported();
       }
       break;

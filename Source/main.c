@@ -9,6 +9,7 @@
 #include "registers.h"
 #include "timers.h"
 #include "audio_manager.h"
+#include "input_manager.hpp"
 
 const int ZOOM = 7;
 
@@ -57,8 +58,9 @@ void run(Renderer* renderer, AudioManager* audioManager)
   int PC = PROGRAM_START_ADRESS;
   Registers registers;
   Timers timers = {0, 0};
+  InputManager inputManager = {false};
   
-  loadProgram("./exemple_programs/heartmonitor/heart_monitor.ch8", memory + PROGRAM_START_ADRESS);
+  loadProgram("./exemple_programs/chipquarium/chipquarium.ch8", memory + PROGRAM_START_ADRESS);
   clearScreen(renderer);
 
   SDL_Rect sourceRect = {0, 0, 64, 32};
@@ -69,19 +71,35 @@ void run(Renderer* renderer, AudioManager* audioManager)
   while (running)
   {
     SDL_Event event;
-    SDL_PollEvent(&event);
-
-    if (event.type == SDL_QUIT || PC > RAM_SIZE)
+    while (SDL_PollEvent(&event))
     {
-      running = false;
-      break;
-    }
+      if (event.type == SDL_QUIT || PC > RAM_SIZE)
+      {
+        running = false;
+      }
 
-    unsigned short instruction = readNextInstruction(&PC, memory);
-    // printf("%i : 0x%04X\n", PC, instruction); 
-    int result = interpretInstuction(instruction, renderer, &registers, &timers,
-      memory, &PC);
-    if (result == -1) running = false;
+      else if (event.type == SDL_KEYDOWN)
+      {
+        printf("Input detected, keycode : %i\n", event.key.keysym.sym);
+        bool isKeyValid = true;
+        uint8_t key = convertInputSym(event.key.keysym.sym, &isKeyValid);
+        if (isKeyValid)
+        {
+          registers.I = key;
+          inputManager.waitForInput = false;
+        }
+      }
+    }
+    if (!running) break;
+
+    if (!inputManager.waitForInput)
+    {
+      unsigned short instruction = readNextInstruction(&PC, memory);
+      printf("%i : 0x%04X\n", PC, instruction); 
+      int result = interpretInstuction(instruction, renderer, &registers, &timers,
+          &inputManager, memory, &PC);
+      if (result == -1) running = false;
+    }
 
     double newTime = getTimeInMilliseconds();
     double elapsedTime = newTime - formerTime;
