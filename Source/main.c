@@ -53,6 +53,8 @@ double getTimeInMilliseconds()
 
 void run(Renderer* renderer, AudioManager* audioManager)
 {
+  srand(time(NULL));
+
   bool running = true;
   char* memory = malloc(RAM_SIZE);
   int PC = PROGRAM_START_ADRESS;
@@ -87,7 +89,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
         {
           registers.I = key;
           inputManager.waitForInput = false;
-        }
+        } else printf("Unsupported input\n");
       }
     }
     if (!running) break;

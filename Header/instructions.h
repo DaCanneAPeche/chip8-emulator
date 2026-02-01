@@ -100,6 +100,12 @@ void setVXasVY_AND(char VX, char VY, Registers* registers)
   registers->V[VX] = registers->V[VY] & registers->V[VX];
 }
 
+void assignRegisterRandomValue(char Vindex, int16_t mask, Registers* registers)
+{
+  int16_t randomNumber = rand() % 0xFF;
+  registers->V[Vindex] = randomNumber & mask;
+}
+
 unsigned short readNextInstruction(int* PC, char* program)
 {
   unsigned short instruction = ((unsigned char)program[*PC] << 8) |
@@ -174,6 +180,7 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
       break;
 
     case 0xA: storeInRegisterI(nibbles[1], nibbles[2], nibbles[3], registers); break;
+    case 0xC: assignRegisterRandomValue(nibbles[1], combine2Nibbles(nibbles[2], nibbles[3]), registers); break;
     case 0xD: drawSprite(nibbles[1], nibbles[2], nibbles[3], renderer, registers, memory); break;
 
     case 0xF:
