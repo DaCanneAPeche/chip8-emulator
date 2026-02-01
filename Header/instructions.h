@@ -27,9 +27,14 @@ int unsupported()
   return -1;
 }
 
-void setSoundTimer(Timers* timers, Registers* registers, int Vindex)
+void setSoundTimer(char Vindex, Timers* timers, Registers* registers)
 {
   timers->sound = (uint8_t)registers->V[Vindex];
+}
+
+void setDelayTimer(char Vindex, Timers* timers, Registers* registers)
+{
+  timers->delay = (uint8_t)registers->V[Vindex];
 }
 
 void storeInRegisterV(char Vindex, char firstNibble, char secondNibble, Registers* registers)
@@ -44,7 +49,19 @@ void storeInRegisterI(char firstNibble, char secondNibble, char thirdNibble, Reg
 
 void addToRegisterV(char Vindex, unsigned char amount, Registers* registers)
 {
-  registers->V[Vindex] += amount;
+  unsigned int sum = amount + registers->V[Vindex];
+  registers->V[Vindex] = sum % 256;
+}
+
+void sumRegistersAndIndicateCarry(char VX, char VY, Registers* registers)
+{
+  unsigned int sum = registers->V[VX] + registers->V[VY];
+
+  if (sum > 255) // Carry occures
+    registers->V[15] = 0x01;
+  else registers->V[15] = 0x00;
+
+  registers->V[VX] = sum % 256;
 }
 
 void addVxToI(char Vindex, Registers* registers)
@@ -175,6 +192,7 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
       {
         case 0x0: setVXasVY(nibbles[1], nibbles[2], registers); break;
         case 0x2: setVXasVY_AND(nibbles[1], nibbles[2], registers); break;
+        case 0x4: sumRegistersAndIndicateCarry(nibbles[1], nibbles[2], registers); break;
         default: return unsupported(); break;
       }
       break;
@@ -187,7 +205,8 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
       switch (combine2Nibbles(nibbles[2], nibbles[3]))
       {
         case 0x0A: waitForInput(inputManager); break;
-        case 0x18: setSoundTimer(timers, registers, nibbles[1]); break;
+        case 0x15: setDelayTimer(nibbles[1], timers, registers); break;
+        case 0x18: setSoundTimer(nibbles[1], timers, registers); break;
         case 0x1E: addVxToI(nibbles[1], registers); break;
         default: return unsupported();
       }
