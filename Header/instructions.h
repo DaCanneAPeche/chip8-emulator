@@ -67,8 +67,8 @@ void sumRegistersAndIndicateCarry(char VX, char VY, Registers* registers)
   unsigned int sum = registers->V[VX] + registers->V[VY];
 
   if (sum > 255) // Carry occures
-    registers->V[15] = 0x01;
-  else registers->V[15] = 0x00;
+    registers->V[0xF] = 0x01;
+  else registers->V[0xF] = 0x00;
 
   registers->V[VX] = sum % 256;
 }
@@ -79,12 +79,12 @@ void substractRegistersAndIndicateBorrow(char VX, char VY, Registers* registers)
 
   if (substraction < 0) // Borrow occures
   {
-    registers->V[15] = 0x00;
+    registers->V[0xF] = 0x00;
     /* registers->V[VX] = 0; */
   }
   else
   {
-    registers->V[15] = 0x01;
+    registers->V[0xF] = 0x01;
   }
     registers->V[VX] = substraction;
 }
@@ -95,14 +95,26 @@ void substractRegistersTheOtherWayAndIndicateBorrow(char VX, char VY, Registers*
 
   if (substraction < 0) // Borrow occures
   {
-    registers->V[15] = 0x00;
+    registers->V[0xF] = 0x00;
     /* registers->V[VX] = 0; */
   }
   else
   {
-    registers->V[15] = 0x01;
+    registers->V[0xF] = 0x01;
   }
     registers->V[VX] = substraction;
+}
+
+void shiftRegisterLeft(char VX, char VY, Registers* registers)
+{
+  registers->V[0xF] = (registers->V[VY] & 0x80) >> 7;
+  registers->V[VX] = registers->V[VY] << 1;
+}
+
+void shiftRegisterRight(char VX, char VY, Registers* registers)
+{
+  registers->V[0xF] = registers->V[VY] & 0x01;
+  registers->V[VX] = registers->V[VY] >> 1;
 }
 
 void addVxToI(char Vindex, Registers* registers)
@@ -263,7 +275,9 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
         case 0x2: setVXasVY_AND(nibbles[1], nibbles[2], registers); break;
         case 0x4: sumRegistersAndIndicateCarry(nibbles[1], nibbles[2], registers); break;
         case 0x5: substractRegistersAndIndicateBorrow(nibbles[1], nibbles[2], registers); break;
+        case 0x6: shiftRegisterRight(nibbles[1], nibbles[2], registers); break;
         case 0x7: substractRegistersTheOtherWayAndIndicateBorrow(nibbles[1], nibbles[2], registers); break;
+        case 0xE: shiftRegisterLeft(nibbles[1], nibbles[2], registers); break;
         default: return unsupported(); break;
       }
       break;

@@ -20,7 +20,7 @@ const size_t VARIABLE_AND_DISPLAY_RAM_SIZE = 0x160;
 
 const size_t PROGRAM_SIZE = RAM_SIZE - VARIABLE_AND_DISPLAY_RAM_SIZE - PROGRAM_START_ADRESS;
 
-const double TIMER_SPEED_HZ = 60;
+const double TIMER_SPEED_HZ = 300;
 
 void loadProgram(char* path, char* program)
 {
@@ -88,7 +88,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
   Timers timers = {0, 0};
   InputManager inputManager = {false};
   
-  loadProgram("./exemple_programs/delaytimer/delay_timer_test.ch8", memory + PROGRAM_START_ADRESS);
+  loadProgram("./exemple_programs/chipquarium/chipquarium.ch8", memory + PROGRAM_START_ADRESS);
   clearScreen(renderer);
 
   SDL_Rect sourceRect = {0, 0, 64, 32};
