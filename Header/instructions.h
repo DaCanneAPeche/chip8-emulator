@@ -1,6 +1,8 @@
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 
+#define FONT_STARTING_ADRESS 0x50
+
 #include <stdio.h>
 #include <math.h>
 
@@ -197,6 +199,28 @@ void waitForInput(InputManager* inputManager)
   inputManager->waitForInput = true;
 }
 
+void storeBinaryCodedDecimal(char Vindex, char* memory, Registers* registers)
+{
+  uint8_t value = registers->V[Vindex];
+  memory[registers->I]     = value / 100;          // hundreds digit
+  memory[registers->I + 1] = (value / 10) % 10;    // tens digit
+  memory[registers->I + 2] = value % 10;           // ones digit
+}
+
+void fillRegisters(char maxVindex, char* memory, Registers* registers)
+{
+  for (size_t i = 0 ; i <= maxVindex ; i++) // Including maxVindex (<= and not <)
+  {
+    registers->V[i] = memory[registers->I + i];
+  }
+  registers->I += maxVindex + 1;
+}
+
+void setIAsDigitAdress(char Vindex, Registers* registers)
+{
+  registers->I = FONT_STARTING_ADRESS + (5 * registers->V[Vindex]);
+}
+
 // Extract hexadecimal "figures"
 void extractNibbles(char nibbles[4], unsigned short opcode)
 {
@@ -263,6 +287,9 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
         case 0x15: setDelayTimer(nibbles[1], timers, registers); break;
         case 0x18: setSoundTimer(nibbles[1], timers, registers); break;
         case 0x1E: addVxToI(nibbles[1], registers); break;
+        case 0x29: setIAsDigitAdress(nibbles[1], registers); break;
+        case 0x33: storeBinaryCodedDecimal(nibbles[1], memory, registers); break;
+        case 0x65: fillRegisters(nibbles[1], memory, registers); break;
         default: return unsupported();
       }
       break;
