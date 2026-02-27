@@ -112,7 +112,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
         uint8_t key = convertInputSym(event.key.keysym.sym, &isKeyValid);
         if (isKeyValid && inputManager.waitForInput)
         {
-          registers.I = key;
+          registers.V[inputManager.VIndexToStoreInput] = key;
           inputManager.waitForInput = false;
         } 
       }

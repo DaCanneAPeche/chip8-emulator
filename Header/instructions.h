@@ -194,8 +194,9 @@ void endOFSubroutine(int* PC)
   *PC = popSubroutine();
 }
 
-void waitForInput(InputManager* inputManager)
+void waitForInput(char Vindex, InputManager* inputManager)
 {
+  inputManager->VIndexToStoreInput = Vindex;  
   inputManager->waitForInput = true;
 }
 
@@ -283,7 +284,7 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
       switch (combine2Nibbles(nibbles[2], nibbles[3]))
       {
         case 0x07: storeDelayTimerInRegister(nibbles[1], timers, registers); break;
-        case 0x0A: waitForInput(inputManager); break;
+        case 0x0A: waitForInput(nibbles[1], inputManager); break;
         case 0x15: setDelayTimer(nibbles[1], timers, registers); break;
         case 0x18: setSoundTimer(nibbles[1], timers, registers); break;
         case 0x1E: addVxToI(nibbles[1], registers); break;

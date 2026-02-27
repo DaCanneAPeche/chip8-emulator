@@ -7,6 +7,7 @@
 typedef struct InputManager
 {
   bool waitForInput;
+  char VIndexToStoreInput;
 } InputManager;
 
 uint8_t convertInputSym(SDL_KeyCode keyCode, bool* isInputValid)
