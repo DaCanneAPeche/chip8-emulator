@@ -2,8 +2,10 @@
 #define RENDERER_H_BKGBJG2Q
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "vector.h"
 #include <stdint.h>
+#include "debugger.h"
 
 typedef struct Pixel
 {
@@ -18,6 +20,7 @@ typedef struct Renderer {
   SDL_Renderer* renderer;
   SDL_Surface* surface;
   SDL_Texture* texture;
+  TTF_Font* font;
   Pixel* framebuffer;
 	char* title;
 	Vec2i size;
@@ -39,11 +42,20 @@ void getRGBMasks(int* rmask, int* gmask, int* bmask)
 
 struct Renderer initRenderer(char* windowTitle, Vec2i renderingSize, int zoom)
 {
-	struct Renderer renderer = {NULL, NULL, NULL, NULL, NULL, windowTitle, renderingSize};
-
+	struct Renderer renderer = {NULL, NULL, NULL, NULL, NULL, NULL, windowTitle, renderingSize};
 	renderer.window = SDL_CreateWindow(renderer.title, 0, 0, renderer.size.x * zoom, renderer.size.y * zoom, 0);
   renderer.renderer = SDL_CreateRenderer(renderer.window, -1, SDL_RENDERER_ACCELERATED);
   renderer.framebuffer = malloc((size_t)renderer.size.x * (size_t)renderer.size.y * sizeof(Pixel));
+
+  if (TTF_Init() < 0) {
+    printf("Couldn't initialize TTF: %s\n",SDL_GetError());
+  }
+
+  renderer.font = TTF_OpenFont("assets/FiraSans-Regular.ttf", 18);
+  TTF_SetFontStyle(renderer.font, TTF_STYLE_NORMAL);
+  TTF_SetFontOutline(renderer.font, 0);
+  TTF_SetFontKerning(renderer.font, 1);
+  TTF_SetFontHinting(renderer.font, TTF_HINTING_NORMAL);
 
 	return renderer;
 }
@@ -79,7 +91,19 @@ void destroyRenderer(Renderer* renderer)
 {
   SDL_DestroyTexture(renderer->texture);
 	SDL_DestroyWindow(renderer->window);
+  TTF_CloseFont(renderer->font);
+  TTF_Quit();
   SDL_Quit();
+}
+
+void renderDebugger(Debugger* debugger, Renderer* renderer)
+{
+  SDL_Color fg = {255, 0, 0, 255};
+  SDL_Surface* textSurface = TTF_RenderText_Solid(renderer->font, "Hello, world", fg);
+  SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer->renderer, textSurface);
+  SDL_FreeSurface(textSurface);
+  SDL_Rect renderRect = {0, 0, 100, 100};
+  SDL_RenderCopy(renderer->renderer, textTexture, NULL, &renderRect);
 }
 
 #endif /* end of include guard: RENDERER_H_BKGBJG2Q */

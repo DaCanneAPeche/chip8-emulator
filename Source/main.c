@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <time.h>
@@ -20,7 +21,7 @@ const size_t VARIABLE_AND_DISPLAY_RAM_SIZE = 0x160;
 
 const size_t PROGRAM_SIZE = RAM_SIZE - VARIABLE_AND_DISPLAY_RAM_SIZE - PROGRAM_START_ADRESS;
 
-const double TIMER_SPEED_HZ = 300;
+const double TIMER_SPEED_HZ = 60;
 
 void loadProgram(char* path, char* program)
 {
@@ -89,8 +90,9 @@ void run(Renderer* renderer, AudioManager* audioManager)
   InputManager inputManager = {false};
   
   loadProgram("./exemple_programs/chipquarium/chipquarium.ch8", memory + PROGRAM_START_ADRESS);
-  clearScreen(renderer);
+  Debugger debugger = {0, &PC, &registers};
 
+  clearScreen(renderer);
   SDL_Rect sourceRect = {0, 0, 64, 32};
   SDL_Rect upscaledRect = {0, 0, 64 * ZOOM, 32 * ZOOM};
 
@@ -122,6 +124,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
     if (!inputManager.waitForInput)
     {
       unsigned short instruction = readNextInstruction(&PC, memory);
+      debugger.instruction = instruction;
       printf("%i : 0x%04X\n", PC, instruction); 
       int result = interpretInstuction(instruction, renderer, &registers, &timers,
           &inputManager, memory, &PC);
@@ -155,8 +158,10 @@ void run(Renderer* renderer, AudioManager* audioManager)
 
     SDL_RenderClear(renderer->renderer);
     renderer->texture = SDL_CreateTextureFromSurface(renderer->renderer, renderer->surface);
+    SDL_FreeSurface(renderer->surface);
 
     SDL_RenderCopy(renderer->renderer, renderer->texture, &sourceRect, &upscaledRect);
+    renderDebugger(&debugger, renderer);
     SDL_RenderPresent(renderer->renderer);
     usleep(1 * 1000);
   }
