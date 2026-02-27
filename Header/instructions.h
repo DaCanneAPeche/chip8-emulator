@@ -37,6 +37,13 @@ void setDelayTimer(char Vindex, Timers* timers, Registers* registers)
   timers->delay = (uint8_t)registers->V[Vindex];
 }
 
+void storeDelayTimerInRegister(char Vindex, Timers* timers, Registers* registers)
+{
+  if (timers->delay < 0) timers->delay = 0;
+  if (timers->delay > 255) timers->delay = 255;
+  registers->V[Vindex] = (uint8_t)timers->delay;
+}
+
 void storeInRegisterV(char Vindex, char firstNibble, char secondNibble, Registers* registers)
 {
   registers->V[Vindex] = combine2Nibbles(firstNibble, secondNibble);
@@ -62,6 +69,38 @@ void sumRegistersAndIndicateCarry(char VX, char VY, Registers* registers)
   else registers->V[15] = 0x00;
 
   registers->V[VX] = sum % 256;
+}
+
+void substractRegistersAndIndicateBorrow(char VX, char VY, Registers* registers)
+{
+  int substraction = registers->V[VX] - registers->V[VY];
+
+  if (substraction < 0) // Borrow occures
+  {
+    registers->V[15] = 0x00;
+    /* registers->V[VX] = 0; */
+  }
+  else
+  {
+    registers->V[15] = 0x01;
+  }
+    registers->V[VX] = substraction;
+}
+
+void substractRegistersTheOtherWayAndIndicateBorrow(char VX, char VY, Registers* registers)
+{
+  int substraction = registers->V[VY] - registers->V[VX];
+
+  if (substraction < 0) // Borrow occures
+  {
+    registers->V[15] = 0x00;
+    /* registers->V[VX] = 0; */
+  }
+  else
+  {
+    registers->V[15] = 0x01;
+  }
+    registers->V[VX] = substraction;
 }
 
 void addVxToI(char Vindex, Registers* registers)
@@ -105,6 +144,11 @@ void skipIfVEquals(char Vindex, char value, Registers* registers, int* PC)
 void skipIfVNotEquals(char Vindex, char value, Registers* registers, int* PC)
 {
   if (registers->V[Vindex] != value) *PC += 2;
+}
+
+void skipIfKeyIsPressed(char Vindex, Registers* registers, int* PC)
+{
+  if (isKeyPressed(registers->V[Vindex])) *PC += 2;
 }
 
 void setVXasVY(char VX, char VY, Registers* registers)
@@ -193,6 +237,8 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
         case 0x0: setVXasVY(nibbles[1], nibbles[2], registers); break;
         case 0x2: setVXasVY_AND(nibbles[1], nibbles[2], registers); break;
         case 0x4: sumRegistersAndIndicateCarry(nibbles[1], nibbles[2], registers); break;
+        case 0x5: substractRegistersAndIndicateBorrow(nibbles[1], nibbles[2], registers); break;
+        case 0x7: substractRegistersTheOtherWayAndIndicateBorrow(nibbles[1], nibbles[2], registers); break;
         default: return unsupported(); break;
       }
       break;
@@ -200,10 +246,19 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
     case 0xA: storeInRegisterI(nibbles[1], nibbles[2], nibbles[3], registers); break;
     case 0xC: assignRegisterRandomValue(nibbles[1], combine2Nibbles(nibbles[2], nibbles[3]), registers); break;
     case 0xD: drawSprite(nibbles[1], nibbles[2], nibbles[3], renderer, registers, memory); break;
+              
+    case 0xE:
+      switch (combine2Nibbles(nibbles[2], nibbles[3]))
+      {
+        case 0x9E: skipIfKeyIsPressed(nibbles[1], registers, PC); break;
+        default: return unsupported();
+      }
+      break;
 
     case 0xF:
       switch (combine2Nibbles(nibbles[2], nibbles[3]))
       {
+        case 0x07: storeDelayTimerInRegister(nibbles[1], timers, registers); break;
         case 0x0A: waitForInput(inputManager); break;
         case 0x15: setDelayTimer(nibbles[1], timers, registers); break;
         case 0x18: setSoundTimer(nibbles[1], timers, registers); break;

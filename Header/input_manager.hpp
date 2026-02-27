@@ -36,4 +36,40 @@ uint8_t convertInputSym(SDL_KeyCode keyCode, bool* isInputValid)
   return 0;
 }
 
+SDL_KeyCode convertInputSymToSDL(uint8_t key, bool* isInputValid)
+{
+  switch (key)
+  {
+    case 0: return SDLK_0;
+    case 1: return SDLK_1;
+    case 2: return SDLK_2;
+    case 3: return SDLK_3;
+    case 4: return SDLK_4;
+    case 5: return SDLK_5;
+    case 6: return SDLK_6;
+    case 7: return SDLK_7;
+    case 8: return SDLK_8;
+    case 9: return SDLK_9;
+
+    case 0xa: return SDLK_a;
+    case 0xb: return SDLK_b;
+    case 0xc: return SDLK_c;
+    case 0xd: return SDLK_d;
+    case 0xe: return SDLK_e;
+    case 0xf: return SDLK_f;
+
+    default: *isInputValid = false;
+  }
+  return 0;
+}
+
+bool isKeyPressed(uint8_t key)
+{
+  bool isInputValid = true;
+  SDL_KeyCode keyCode = convertInputSymToSDL(key, &isInputValid);
+  const uint8_t* keyboardState = SDL_GetKeyboardState(NULL);
+
+  return isInputValid && keyboardState[SDL_GetScancodeFromKey(keyCode)];
+}
+
 #endif

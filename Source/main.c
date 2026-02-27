@@ -62,7 +62,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
   Timers timers = {0, 0};
   InputManager inputManager = {false};
   
-  loadProgram("./exemple_programs/chipquarium/chipquarium.ch8", memory + PROGRAM_START_ADRESS);
+  loadProgram("./exemple_programs/delaytimer/delay_timer_test.ch8", memory + PROGRAM_START_ADRESS);
   clearScreen(renderer);
 
   SDL_Rect sourceRect = {0, 0, 64, 32};
@@ -82,14 +82,13 @@ void run(Renderer* renderer, AudioManager* audioManager)
 
       else if (event.type == SDL_KEYDOWN)
       {
-        printf("Input detected, keycode : %i\n", event.key.keysym.sym);
         bool isKeyValid = true;
         uint8_t key = convertInputSym(event.key.keysym.sym, &isKeyValid);
-        if (isKeyValid)
+        if (isKeyValid && inputManager.waitForInput)
         {
           registers.I = key;
           inputManager.waitForInput = false;
-        } else printf("Unsupported input\n");
+        } 
       }
     }
     if (!running) break;
