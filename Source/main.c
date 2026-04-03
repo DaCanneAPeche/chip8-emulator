@@ -12,7 +12,7 @@
 #include "audio_manager.h"
 #include "input_manager.hpp"
 
-const int ZOOM = 7;
+const int ZOOM = 12;
 
 // in bytes
 const size_t RAM_SIZE = 0xFFF;

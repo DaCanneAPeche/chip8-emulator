@@ -113,10 +113,22 @@ void renderText(Renderer* renderer, const char* text, int x, int y, SDL_Color fg
   SDL_DestroyTexture(textTexture);
 }
 
+void renderVRegisters(Debugger* debugger, Renderer* renderer, SDL_Color fg)
+{
+  for (int i = 0 ; i < 16 ; i++)
+  {
+    char* VRegisterText = (char*)malloc(sizeof(char) * 10);
+    sprintf(VRegisterText, "%i : 0x%02X", i, debugger->registers->V[i]);
+    renderText(renderer, VRegisterText, 10 + 100 * (i / 4), 30 + 20 * (i % 4), fg, 1);
+    free(VRegisterText);
+  }
+}
+
 void renderDebugger(Debugger* debugger, Renderer* renderer)
 {
-  SDL_Color fg = {255, 0, 0, 255};
-  renderText(renderer, "Hello, world !", 10, 10, fg, 3);
+  SDL_Color fg = {255, 0, 0, 255}; // red
+  renderText(renderer, "V Registers : ", 0, 0, fg, 1);
+  renderVRegisters(debugger, renderer, fg);
 }
 
 #endif /* end of include guard: RENDERER_H_BKGBJG2Q */
