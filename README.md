@@ -15,9 +15,9 @@ Install it and then use the `xmake` command to compile and run with `xmake run`.
 
 ## Todo
 - Implement remaining instructions (eg. sound and inputs) ;
-Was only tested with the hearth monitor exemple for now (with no sound).
+Was only tested with the hearth monitor & chipquarium exemples for now (with no sound).
 
-- Registers debugger
+- Registers debugger (In progess...)
 
 - Infinite subroutine stack.
 
@@ -26,7 +26,3 @@ Was only tested with the hearth monitor exemple for now (with no sound).
 - Cross platform and customizable sleeping.
 
 - Enter program path & zoom after compilation.
-
-- switching from char to uint8_t
-
-- Debugger (seems like one instruction is broken right now so it is the making) 

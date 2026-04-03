@@ -12,12 +12,12 @@
 #include "timers.h"
 #include "input_manager.hpp"
 
-unsigned char combine2Nibbles(char first, char second)
+uint8_t combine2Nibbles(uint8_t first, uint8_t second)
 {
-  return (unsigned char)first << 4 | (unsigned char)second;
+  return first << 4 | second;
 }
 
-unsigned short combine3Nibbles(char first, char second, char third)
+unsigned short combine3Nibbles(uint8_t first, uint8_t second, uint8_t third)
 {
   return (unsigned short)first << 8 | (unsigned short)second << 4 |
          (unsigned short)third;
@@ -29,40 +29,40 @@ int unsupported()
   return -1;
 }
 
-void setSoundTimer(char Vindex, Timers* timers, Registers* registers)
+void setSoundTimer(uint8_t Vindex, Timers* timers, Registers* registers)
 {
-  timers->sound = (uint8_t)registers->V[Vindex];
+  timers->sound = registers->V[Vindex];
 }
 
-void setDelayTimer(char Vindex, Timers* timers, Registers* registers)
+void setDelayTimer(uint8_t Vindex, Timers* timers, Registers* registers)
 {
-  timers->delay = (uint8_t)registers->V[Vindex];
+  timers->delay = registers->V[Vindex];
 }
 
-void storeDelayTimerInRegister(char Vindex, Timers* timers, Registers* registers)
+void storeDelayTimerInRegister(uint8_t Vindex, Timers* timers, Registers* registers)
 {
   if (timers->delay < 0) timers->delay = 0;
   if (timers->delay > 255) timers->delay = 255;
-  registers->V[Vindex] = (uint8_t)timers->delay;
+  registers->V[Vindex] = timers->delay;
 }
 
-void storeInRegisterV(char Vindex, char firstNibble, char secondNibble, Registers* registers)
+void storeInRegisterV(uint8_t Vindex, uint8_t firstNibble, uint8_t secondNibble, Registers* registers)
 {
   registers->V[Vindex] = combine2Nibbles(firstNibble, secondNibble);
 }
 
-void storeInRegisterI(char firstNibble, char secondNibble, char thirdNibble, Registers* registers)
+void storeInRegisterI(uint8_t firstNibble, uint8_t secondNibble, uint8_t thirdNibble, Registers* registers)
 {
   registers->I = combine3Nibbles(firstNibble, secondNibble, thirdNibble);
 }
 
-void addToRegisterV(char Vindex, unsigned char amount, Registers* registers)
+void addToRegisterV(uint8_t Vindex, uint8_t amount, Registers* registers)
 {
   unsigned int sum = amount + registers->V[Vindex];
   registers->V[Vindex] = sum % 256;
 }
 
-void sumRegistersAndIndicateCarry(char VX, char VY, Registers* registers)
+void sumRegistersAndIndicateCarry(uint8_t VX, uint8_t VY, Registers* registers)
 {
   unsigned int sum = registers->V[VX] + registers->V[VY];
 
@@ -73,7 +73,7 @@ void sumRegistersAndIndicateCarry(char VX, char VY, Registers* registers)
   registers->V[VX] = sum % 256;
 }
 
-void substractRegistersAndIndicateBorrow(char VX, char VY, Registers* registers)
+void substractRegistersAndIndicateBorrow(uint8_t VX, uint8_t VY, Registers* registers)
 {
   int substraction = registers->V[VX] - registers->V[VY];
 
@@ -89,7 +89,7 @@ void substractRegistersAndIndicateBorrow(char VX, char VY, Registers* registers)
     registers->V[VX] = substraction;
 }
 
-void substractRegistersTheOtherWayAndIndicateBorrow(char VX, char VY, Registers* registers)
+void substractRegistersTheOtherWayAndIndicateBorrow(uint8_t VX, uint8_t VY, Registers* registers)
 {
   int substraction = registers->V[VY] - registers->V[VX];
 
@@ -105,25 +105,25 @@ void substractRegistersTheOtherWayAndIndicateBorrow(char VX, char VY, Registers*
     registers->V[VX] = substraction;
 }
 
-void shiftRegisterLeft(char VX, char VY, Registers* registers)
+void shiftRegisterLeft(uint8_t VX, uint8_t VY, Registers* registers)
 {
   registers->V[0xF] = (registers->V[VY] & 0x80) >> 7;
   registers->V[VX] = registers->V[VY] << 1;
 }
 
-void shiftRegisterRight(char VX, char VY, Registers* registers)
+void shiftRegisterRight(uint8_t VX, uint8_t VY, Registers* registers)
 {
   registers->V[0xF] = registers->V[VY] & 0x01;
   registers->V[VX] = registers->V[VY] >> 1;
 }
 
-void addVxToI(char Vindex, Registers* registers)
+void addVxToI(uint8_t Vindex, Registers* registers)
 {
   registers->I += registers->V[Vindex];
 }
 
 void drawSprite(int vx, int vy, int byteLength, Renderer* renderer,
-    Registers* registers, char* memory)
+    Registers* registers, uint8_t* memory)
 {
   unsigned short spriteAdress = registers->I;
   uint8_t x = registers->V[vx];
@@ -134,7 +134,7 @@ void drawSprite(int vx, int vy, int byteLength, Renderer* renderer,
   // printf("%i\n", spriteAdress);
   for (int i = 0 ; i < byteLength ; i++)
   {
-    unsigned char row = (unsigned char)memory[spriteAdress + i];
+    uint8_t row = memory[spriteAdress + i];
     // printf("%i:%u\n", i + spriteAdress, row);
 
     for (int j = 0 ; j < 8 ; j++)
@@ -150,41 +150,41 @@ void drawSprite(int vx, int vy, int byteLength, Renderer* renderer,
   // printf("\n");
 }
 
-void skipIfVEquals(char Vindex, char value, Registers* registers, int* PC)
+void skipIfVEquals(uint8_t Vindex, uint8_t value, Registers* registers, int* PC)
 {
   if (registers->V[Vindex] == value) *PC += 2;
 }
 
-void skipIfVNotEquals(char Vindex, char value, Registers* registers, int* PC)
+void skipIfVNotEquals(uint8_t Vindex, uint8_t value, Registers* registers, int* PC)
 {
   if (registers->V[Vindex] != value) *PC += 2;
 }
 
-void skipIfKeyIsPressed(char Vindex, Registers* registers, int* PC)
+void skipIfKeyIsPressed(uint8_t Vindex, Registers* registers, int* PC)
 {
   if (isKeyPressed(registers->V[Vindex])) *PC += 2;
 }
 
-void setVXasVY(char VX, char VY, Registers* registers)
+void setVXasVY(uint8_t VX, uint8_t VY, Registers* registers)
 {
   registers->V[VX] = registers->V[VY];
 }
 
-void setVXasVY_AND(char VX, char VY, Registers* registers)
+void setVXasVY_AND(uint8_t VX, uint8_t VY, Registers* registers)
 {
   registers->V[VX] = registers->V[VY] & registers->V[VX];
 }
 
-void assignRegisterRandomValue(char Vindex, int16_t mask, Registers* registers)
+void assignRegisterRandomValue(uint8_t Vindex, int16_t mask, Registers* registers)
 {
   int16_t randomNumber = rand() % 0xFF;
   registers->V[Vindex] = randomNumber & mask;
 }
 
-unsigned short readNextInstruction(int* PC, char* program)
+unsigned short readNextInstruction(int* PC, uint8_t* program)
 {
-  unsigned short instruction = ((unsigned char)program[*PC] << 8) |
-                                (unsigned char)program[*PC + 1];
+  unsigned short instruction = (program[*PC] << 8) |
+                                program[*PC + 1];
   *PC += 2;
   return instruction;
 }
@@ -206,13 +206,13 @@ void endOFSubroutine(int* PC)
   *PC = popSubroutine();
 }
 
-void waitForInput(char Vindex, InputManager* inputManager)
+void waitForInput(uint8_t Vindex, InputManager* inputManager)
 {
   inputManager->VIndexToStoreInput = Vindex;  
   inputManager->waitForInput = true;
 }
 
-void storeBinaryCodedDecimal(char Vindex, char* memory, Registers* registers)
+void storeBinaryCodedDecimal(uint8_t Vindex, uint8_t* memory, Registers* registers)
 {
   uint8_t value = registers->V[Vindex];
   memory[registers->I]     = value / 100;          // hundreds digit
@@ -220,7 +220,7 @@ void storeBinaryCodedDecimal(char Vindex, char* memory, Registers* registers)
   memory[registers->I + 2] = value % 10;           // ones digit
 }
 
-void fillRegisters(char maxVindex, char* memory, Registers* registers)
+void fillRegisters(uint8_t maxVindex, uint8_t* memory, Registers* registers)
 {
   for (size_t i = 0 ; i <= maxVindex ; i++) // Including maxVindex (<= and not <)
   {
@@ -229,13 +229,13 @@ void fillRegisters(char maxVindex, char* memory, Registers* registers)
   registers->I += maxVindex + 1;
 }
 
-void setIAsDigitAdress(char Vindex, Registers* registers)
+void setIAsDigitAdress(uint8_t Vindex, Registers* registers)
 {
   registers->I = FONT_STARTING_ADRESS + (5 * registers->V[Vindex]);
 }
 
 // Extract hexadecimal "figures"
-void extractNibbles(char nibbles[4], unsigned short opcode)
+void extractNibbles(uint8_t nibbles[4], unsigned short opcode)
 {
   nibbles[0] = (opcode >> 12) & 0xF; 
   nibbles[1] = (opcode >>  8) & 0xF; 
@@ -245,9 +245,9 @@ void extractNibbles(char nibbles[4], unsigned short opcode)
 
 int interpretInstuction(unsigned short instruction, Renderer* renderer,
     Registers* registers, Timers* timers, InputManager* inputManager,
-    char* memory, int* PC)
+    uint8_t* memory, int* PC)
 {
-  char nibbles[4];
+  uint8_t nibbles[4];
   extractNibbles(nibbles, instruction);
 
   switch (nibbles[0])

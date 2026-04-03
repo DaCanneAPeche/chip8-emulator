@@ -23,7 +23,7 @@ const size_t PROGRAM_SIZE = RAM_SIZE - VARIABLE_AND_DISPLAY_RAM_SIZE - PROGRAM_S
 
 const double TIMER_SPEED_HZ = 60;
 
-void loadProgram(char* path, char* program)
+void loadProgram(char* path, uint8_t* program)
 {
   FILE* pFile = fopen(path, "r");
   if (pFile == NULL)
@@ -34,11 +34,11 @@ void loadProgram(char* path, char* program)
   fclose(pFile);
 }
 
-void printMemory(char* memory, size_t length)
+void printMemory(uint8_t* memory, size_t length)
 {
   for (size_t i = 0 ; i < length ; i++)
   {
-    printf("%u:0x%02X ", (unsigned int)(i), (unsigned char)memory[i]);
+    printf("%u:0x%02X ", (unsigned int)(i), memory[i]);
   }
 
   printf("\n");
@@ -52,9 +52,18 @@ double getTimeInMilliseconds()
     return ts.tv_sec * 1000.0 + ts.tv_nsec / 1.0e6;  // ms
 }
 
-void fillFontData(char* memory, uint16_t startingAdress)
+void clearRegisters(Registers* registers)
 {
-  char fontSet[80] = {
+  for (int i = 0 ; i < 16 ; i++)
+  {
+    registers->V[i] = 0;
+  }
+  registers->I = 0;
+}
+
+void fillFontData(uint8_t* memory, uint16_t startingAdress)
+{
+  uint8_t fontSet[80] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
     0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -81,11 +90,12 @@ void run(Renderer* renderer, AudioManager* audioManager)
   srand(time(NULL));
 
   bool running = true;
-  char* memory = malloc(RAM_SIZE);
+  uint8_t* memory = malloc(RAM_SIZE);
   fillFontData(memory, 0x50);
   
   int PC = PROGRAM_START_ADRESS;
   Registers registers;
+  clearRegisters(&registers);
   Timers timers = {0, 0};
   InputManager inputManager = {false};
   

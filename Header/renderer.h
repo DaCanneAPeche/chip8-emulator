@@ -118,7 +118,8 @@ void renderVRegisters(Debugger* debugger, Renderer* renderer, SDL_Color fg)
   for (int i = 0 ; i < 16 ; i++)
   {
     char* VRegisterText = (char*)malloc(sizeof(char) * 10);
-    sprintf(VRegisterText, "%i : 0x%02X", i, debugger->registers->V[i]);
+    /* sprintf(VRegisterText, "%i : 0x%02X", i, debugger->registers->V[i]); */
+    sprintf(VRegisterText, "%i : %u", i, debugger->registers->V[i]);
     renderText(renderer, VRegisterText, 10 + 100 * (i / 4), 30 + 20 * (i % 4), fg, 1);
     free(VRegisterText);
   }

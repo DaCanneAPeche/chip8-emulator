@@ -5,7 +5,7 @@
 
 typedef struct Registers
 {
-  char V[16];
+  uint8_t V[16];
   uint16_t I;
 } Registers;
 
