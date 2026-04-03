@@ -96,14 +96,27 @@ void destroyRenderer(Renderer* renderer)
   SDL_Quit();
 }
 
+void renderText(Renderer* renderer, const char* text, int x, int y, SDL_Color fg,
+    float fontSizeMultiplier)
+{
+  SDL_Surface* textSurface = TTF_RenderText_Solid(renderer->font, text, fg);
+  SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer->renderer, textSurface);
+  SDL_FreeSurface(textSurface);
+
+  // Native font size
+  SDL_Rect renderRect = {x, y, 0, 0};
+  TTF_SizeText(renderer->font, text, &renderRect.w, &renderRect.h);
+  renderRect.w *= fontSizeMultiplier;
+  renderRect.h *= fontSizeMultiplier;
+
+  SDL_RenderCopy(renderer->renderer, textTexture, NULL, &renderRect);
+  SDL_DestroyTexture(textTexture);
+}
+
 void renderDebugger(Debugger* debugger, Renderer* renderer)
 {
   SDL_Color fg = {255, 0, 0, 255};
-  SDL_Surface* textSurface = TTF_RenderText_Solid(renderer->font, "Hello, world", fg);
-  SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer->renderer, textSurface);
-  SDL_FreeSurface(textSurface);
-  SDL_Rect renderRect = {0, 0, 100, 100};
-  SDL_RenderCopy(renderer->renderer, textTexture, NULL, &renderRect);
+  renderText(renderer, "Hello, world !", 10, 10, fg, 3);
 }
 
 #endif /* end of include guard: RENDERER_H_BKGBJG2Q */
