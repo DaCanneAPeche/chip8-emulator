@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <unistd.h>
 #include <time.h>
 
 #include "renderer.h"
@@ -11,6 +10,7 @@
 #include "timers.h"
 #include "audio_manager.h"
 #include "input_manager.hpp"
+#include "sleep.h"
 
 const int ZOOM = 12;
 
@@ -21,7 +21,8 @@ const size_t VARIABLE_AND_DISPLAY_RAM_SIZE = 0x160;
 
 const size_t PROGRAM_SIZE = RAM_SIZE - VARIABLE_AND_DISPLAY_RAM_SIZE - PROGRAM_START_ADRESS;
 
-const double TIMER_SPEED_HZ = 60;
+const double SIMULATED_TIMER_SPEED_HZ = 60;
+const int INSTRUCTION_TIME_MS = 1; // Time between each instruction
 
 void loadProgram(char* path, uint8_t* program)
 {
@@ -143,7 +144,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
 
     double newTime = getTimeInMilliseconds();
     double elapsedTime = newTime - formerTime;
-    double simulatedClockElapsedTime = elapsedTime/1000 * TIMER_SPEED_HZ;
+    double simulatedClockElapsedTime = elapsedTime/1000 * SIMULATED_TIMER_SPEED_HZ;
     formerTime = newTime;
 
     if (timers.sound > 0)
@@ -173,7 +174,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
     SDL_RenderCopy(renderer->renderer, renderer->texture, &sourceRect, &upscaledRect);
     renderDebugger(&debugger, renderer);
     SDL_RenderPresent(renderer->renderer);
-    usleep(1 * 1000);
+    sleepMS(INSTRUCTION_TIME_MS);
   }
 }
 
