@@ -8,3 +8,12 @@ target("chip-8")
     add_includedirs("Header")
     add_packages("libsdl2", "libsdl2_ttf")
 
+    after_build(function (target)
+      if not os.exists("$(buildir)/$(plat)/$(arch)/$(mode)/assets") then
+        os.ln("../../../../assets", "$(buildir)/$(plat)/$(arch)/$(mode)/assets")
+      end
+      if not os.exists("$(buildir)/$(plat)/$(arch)/$(mode)/exemple_programs") then
+        os.ln("../../../../exemple_programs", "$(buildir)/$(plat)/$(arch)/$(mode)/exemple_programs")
+      end
+    end)
+
