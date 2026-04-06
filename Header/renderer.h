@@ -118,8 +118,8 @@ void renderVRegisters(Debugger* debugger, Renderer* renderer, SDL_Color fg)
   for (int i = 0 ; i < 16 ; i++)
   {
     char* VRegisterText = (char*)malloc(sizeof(char) * 10);
-    /* sprintf(VRegisterText, "%i : 0x%02X", i, debugger->registers->V[i]); */
-    sprintf(VRegisterText, "%i : %u", i, debugger->registers->V[i]);
+    sprintf(VRegisterText, "%i : 0x%02X", i, debugger->registers->V[i]);
+    /* sprintf(VRegisterText, "%i : %u", i, debugger->registers->V[i]); */
     renderText(renderer, VRegisterText, 10 + 100 * (i / 4), 30 + 20 * (i % 4), fg, 1);
     free(VRegisterText);
   }
@@ -130,6 +130,21 @@ void renderDebugger(Debugger* debugger, Renderer* renderer)
   SDL_Color fg = {255, 0, 0, 255}; // red
   renderText(renderer, "V Registers : ", 0, 0, fg, 1);
   renderVRegisters(debugger, renderer, fg);
+  
+  char* IRegisterText = (char*)malloc(sizeof(char) * 20);
+  sprintf(IRegisterText, "I Register : 0x%04X", debugger->registers->I);
+  renderText(renderer, IRegisterText, 0, 120, fg, 1);
+  free(IRegisterText);
+
+  char* pointerCounterText = (char*)malloc(sizeof(char) * 20);
+  sprintf(pointerCounterText, "PC : %i", *debugger->PC);
+  renderText(renderer, pointerCounterText, 0, 150, fg, 1);
+  free(pointerCounterText);
+
+  char* lastInstructionText = (char*)malloc(sizeof(char) * 30);
+  sprintf(lastInstructionText, "Last instruction : 0x%04X", debugger->instruction);
+  renderText(renderer, lastInstructionText, 0, 180, fg, 1);
+  free(lastInstructionText);
 }
 
 #endif /* end of include guard: RENDERER_H_BKGBJG2Q */
