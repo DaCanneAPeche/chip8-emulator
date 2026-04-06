@@ -12,8 +12,7 @@ The project was made using the [xmake](https://xmake.io/) build tool.
 Install it and then use the `xmake` command to compile and run with `xmake run`.
 
 ## Todo
-- Implement remaining instructions (eg. sound and inputs) ;
-Was only tested with the hearth monitor & chipquarium exemples for now (with no sound).
+- Implement remaining instructions
 
 - Registers debugger (In progess...)
 
