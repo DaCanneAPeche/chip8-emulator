@@ -14,8 +14,6 @@ Install it and then use the `xmake` command to compile and run with `xmake run`.
 ## Todo
 - Implement remaining instructions
 
-- Registers debugger (In progess...)
-
 - Infinite subroutine stack.
 
 - handle sprites rendered outside the screen

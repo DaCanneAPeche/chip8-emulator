@@ -101,7 +101,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
   InputManager inputManager = {false};
   
   loadProgram("./exemple_programs/chipquarium/chipquarium.ch8", memory + PROGRAM_START_ADRESS);
-  Debugger debugger = {0, &PC, &registers};
+  Debugger debugger = {false, 0, &PC, &registers, &timers, &inputManager};
 
   clearScreen(renderer);
   SDL_Rect sourceRect = {0, 0, 64, 32};
@@ -128,6 +128,9 @@ void run(Renderer* renderer, AudioManager* audioManager)
           registers.V[inputManager.VIndexToStoreInput] = key;
           inputManager.waitForInput = false;
         } 
+
+        // Toogle debugger rendering when the space key is pressed
+        if (event.key.keysym.sym == SDLK_SPACE) debugger.render = !debugger.render;
       }
     }
     if (!running) break;

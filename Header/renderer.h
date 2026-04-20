@@ -127,10 +127,14 @@ void renderVRegisters(Debugger* debugger, Renderer* renderer, SDL_Color fg)
 
 void renderDebugger(Debugger* debugger, Renderer* renderer)
 {
+  if (!debugger->render) return;
+
   SDL_Color fg = {255, 0, 0, 255}; // red
   renderText(renderer, "V Registers : ", 0, 0, fg, 1);
   renderVRegisters(debugger, renderer, fg);
   
+  // Repetitive code but implementing a general function is more trouble than anything
+  // because of the different possibnle types of value
   char* IRegisterText = (char*)malloc(sizeof(char) * 20);
   sprintf(IRegisterText, "I Register : 0x%04X", debugger->registers->I);
   renderText(renderer, IRegisterText, 0, 120, fg, 1);
@@ -145,6 +149,22 @@ void renderDebugger(Debugger* debugger, Renderer* renderer)
   sprintf(lastInstructionText, "Last instruction : 0x%04X", debugger->instruction);
   renderText(renderer, lastInstructionText, 0, 180, fg, 1);
   free(lastInstructionText);
+
+  char* delayTimerText = (char*)malloc(sizeof(char) * 30);
+  sprintf(delayTimerText, "Delay timer : %f", debugger->timers->delay);
+  renderText(renderer, delayTimerText, 0, 210, fg, 1);
+  free(delayTimerText);
+
+  char* soundTimerText = (char*)malloc(sizeof(char) * 30);
+  sprintf(soundTimerText, "Sound timer : %f", debugger->timers->sound);
+  renderText(renderer, soundTimerText, 0, 240, fg, 1);
+  free(soundTimerText);
+
+  if (debugger->inputManager->waitForInput)
+    renderText(renderer, "Waiting for input", 0, 270, fg, 1);
+  else
+    renderText(renderer, "Not waiting for input", 0, 270, fg, 1);
+
 }
 
 #endif /* end of include guard: RENDERER_H_BKGBJG2Q */
