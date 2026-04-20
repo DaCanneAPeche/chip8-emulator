@@ -11,6 +11,13 @@ For now, the program path is hardcoded in `Source/main.c`.
 The project was made using the [xmake](https://xmake.io/) build tool.
 Install it and then use the `xmake` command to compile and run with `xmake run`.
 
+## Debugger
+Press the `Space` key to toogle the debugger. It shows information concerning 
+the registers, the pointer counter, the timers...
+
+Screenshot (with the `chipquarium` exemple) :
+![Debugger screenshot](./img/debugger.png)
+
 ## Todo
 - Implement remaining instructions
 
