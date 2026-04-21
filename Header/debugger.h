@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "registers.h"
 #include "timers.h"
-#include "input_manager.hpp"
+#include "input_manager.h"
 
 typedef struct Debugger
 {

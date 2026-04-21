@@ -10,7 +10,7 @@
 #include "registers.h"
 #include "subroutines.h"
 #include "timers.h"
-#include "input_manager.hpp"
+#include "input_manager.h"
 
 uint8_t combine2Nibbles(uint8_t first, uint8_t second)
 {

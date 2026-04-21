@@ -9,7 +9,7 @@
 #include "registers.h"
 #include "timers.h"
 #include "audio_manager.h"
-#include "input_manager.hpp"
+#include "input_manager.h"
 #include "sleep.h"
 
 const int ZOOM = 12;

@@ -1,5 +1,5 @@
-#ifndef INPUT_MANAGER_HPP
-#define INPUT_MANAGER_HPP
+#ifndef INPUT_MANAGER_H
+#define INPUT_MANAGER_H
 
 #include <stdbool.h>
 #include "SDL2/SDL.h"
