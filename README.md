@@ -21,8 +21,6 @@ Screenshot (with the `chipquarium` exemple) :
 ## Todo
 - Infinite subroutine stack.
 
-- handle sprites rendered outside the screen
-
 - Enter program path & zoom after compilation.
 
 - Change input map

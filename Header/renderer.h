@@ -66,17 +66,25 @@ void setPixel(Renderer* renderer, int x, int y, Pixel color)
   renderer->framebuffer[y * renderer->size.x + x] = color;
 }
 
-void flipPixel(Renderer* renderer, int x, int y)
+// Return true if the pixel was set to off
+bool flipPixel(Renderer* renderer, int x, int y)
 {
-  if (x >= renderer->size.x || y >= renderer->size.y || x < 0 || y < 0) return;
+  if (x >= renderer->size.x || y >= renderer->size.y || x < 0 || y < 0) return false;
+
   const Pixel currentColor = renderer->framebuffer[y * renderer->size.x + x];
 
   // if (currentColor == offColor)
   if ((currentColor.r == offColor.r) && (currentColor.g == offColor.g) && 
       (currentColor.b == offColor.b))
+  {
     renderer->framebuffer[y * renderer->size.x + x] = onColor;
+    return false;
+  }
   else
+  {
     renderer->framebuffer[y * renderer->size.x + x] = offColor;
+    return true;
+  }
 }
 
 void clearScreen(Renderer* renderer)

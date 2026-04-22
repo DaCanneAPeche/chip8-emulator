@@ -128,26 +128,24 @@ void drawSprite(int vx, int vy, int byteLength, Renderer* renderer,
   unsigned short spriteAdress = registers->I;
   uint8_t x = registers->V[vx];
   uint8_t y = registers->V[vy];
-  // printf("%u\n", x);
 
-  // printf("0x%04X\n", registers->I); 
-  // printf("%i\n", spriteAdress);
+  // Reduce coordinates when draw outside the screen
+  x -= 64*(int)(x/64); 
+  y -= 32*(int)(y/32); 
+
+  bool wasAPixelSetToOff = false;
   for (int i = 0 ; i < byteLength ; i++)
   {
     uint8_t row = memory[spriteAdress + i];
-    // printf("%i:%u\n", i + spriteAdress, row);
 
     for (int j = 0 ; j < 8 ; j++)
     {
       if (row & (unsigned int)pow(2, 7 - j))
-      {
-        // printf("j: %i\n", j);
-        flipPixel(renderer, x + j, y + i);
-      }
+        if (flipPixel(renderer, x + j, y + i)) wasAPixelSetToOff = true;
     }
-
   }
-  // printf("\n");
+
+  registers->V[0xF] = (int)wasAPixelSetToOff;
 }
 
 void skipIfVEquals(uint8_t Vindex, uint8_t value, Registers* registers, int* PC)
