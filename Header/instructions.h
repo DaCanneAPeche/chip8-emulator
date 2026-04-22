@@ -245,6 +245,15 @@ void storeBinaryCodedDecimal(uint8_t Vindex, uint8_t* memory, Registers* registe
   memory[registers->I + 2] = value % 10;           // ones digit
 }
 
+void storeRegistersInMemory(uint8_t maxVindex, uint8_t* memory, Registers* registers)
+{
+  for (size_t i = 0 ; i <= maxVindex ; i++) // Including maxVindex (<= and not <)
+  {
+    memory[registers->I + i] = registers->V[i];
+  }
+  registers->I += maxVindex + 1;
+}
+
 void fillRegisters(uint8_t maxVindex, uint8_t* memory, Registers* registers)
 {
   for (size_t i = 0 ; i <= maxVindex ; i++) // Including maxVindex (<= and not <)
@@ -333,6 +342,7 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
         case 0x1E: addVxToI(nibbles[1], registers); break;
         case 0x29: setIAsDigitAdress(nibbles[1], registers); break;
         case 0x33: storeBinaryCodedDecimal(nibbles[1], memory, registers); break;
+        case 0x55: storeRegistersInMemory(nibbles[1], memory, registers); break;
         case 0x65: fillRegisters(nibbles[1], memory, registers); break;
         default: return unsupported();
       }
