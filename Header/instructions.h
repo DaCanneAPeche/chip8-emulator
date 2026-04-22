@@ -170,11 +170,20 @@ void setVXasVY(uint8_t VX, uint8_t VY, Registers* registers)
   registers->V[VX] = registers->V[VY];
 }
 
+void setVXasVY_OR(uint8_t VX, uint8_t VY, Registers* registers)
+{
+  registers->V[VX] = registers->V[VY] | registers->V[VX];
+}
+
 void setVXasVY_AND(uint8_t VX, uint8_t VY, Registers* registers)
 {
   registers->V[VX] = registers->V[VY] & registers->V[VX];
 }
 
+void setVXasVY_XOR(uint8_t VX, uint8_t VY, Registers* registers)
+{
+  registers->V[VX] = registers->V[VY] ^ registers->V[VX];
+}
 void assignRegisterRandomValue(uint8_t Vindex, int16_t mask, Registers* registers)
 {
   int16_t randomNumber = rand() % 0xFF;
@@ -278,7 +287,9 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
       switch (nibbles[3])
       {
         case 0x0: setVXasVY(nibbles[1], nibbles[2], registers); break;
+        case 0x1: setVXasVY_OR(nibbles[1], nibbles[2], registers); break;
         case 0x2: setVXasVY_AND(nibbles[1], nibbles[2], registers); break;
+        case 0x3: setVXasVY_XOR(nibbles[1], nibbles[2], registers); break;
         case 0x4: sumRegistersAndIndicateCarry(nibbles[1], nibbles[2], registers); break;
         case 0x5: substractRegistersAndIndicateBorrow(nibbles[1], nibbles[2], registers); break;
         case 0x6: shiftRegisterRight(nibbles[1], nibbles[2], registers); break;
