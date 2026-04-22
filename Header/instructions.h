@@ -203,6 +203,11 @@ void jumpTo(int index, int* PC)
   *PC = index;
 }
 
+void jumpToV0Plus(int index, Registers* registers, int* PC)
+{
+  *PC = index + registers->V[0];
+}
+
 int machineLanguageSubroutine()
 {
   printf("The 0NNN instruction (Execute machine language subroutine at address NNN) is deprecated and was not implemented !");
@@ -300,6 +305,7 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
       break;
 
     case 0xA: storeInRegisterI(nibbles[1], nibbles[2], nibbles[3], registers); break;
+    case 0xB: jumpToV0Plus(combine3Nibbles(nibbles[1], nibbles[2], nibbles[3]), registers, PC); break;
     case 0xC: assignRegisterRandomValue(nibbles[1], combine2Nibbles(nibbles[2], nibbles[3]), registers); break;
     case 0xD: drawSprite(nibbles[1], nibbles[2], nibbles[3], renderer, registers, memory); break;
               
