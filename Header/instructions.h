@@ -194,6 +194,12 @@ void jumpTo(int index, int* PC)
   *PC = index;
 }
 
+int machineLanguageSubroutine()
+{
+  printf("The 0NNN instruction (Execute machine language subroutine at address NNN) is deprecated and was not implemented !");
+  return -1;
+}
+
 int newSubroutine(int* PC, int adress)
 {
   int previousPC = *PC; // PC is incremented before the instruction is executed
@@ -257,7 +263,7 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
       {
         case 0x00E0: clearScreen(renderer); break;
         case 0x00EE: endOFSubroutine(PC); break;
-        default: return unsupported(); break;
+        default: return machineLanguageSubroutine(); // Deprecated and thus unsupported
       }
       break;
 
