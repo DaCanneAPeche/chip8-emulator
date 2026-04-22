@@ -19,8 +19,6 @@ Screenshot (with the `chipquarium` exemple) :
 ![Debugger screenshot](./img/debugger.png)
 
 ## Todo
-- Infinite subroutine stack.
-
 - Enter program path & zoom after compilation.
 
 - Change input map

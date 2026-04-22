@@ -139,7 +139,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
     {
       unsigned short instruction = readNextInstruction(&PC, memory);
       debugger.instruction = instruction;
-      printf("%i : 0x%04X\n", PC, instruction); 
+      /* printf("%i : 0x%04X\n", PC, instruction); */ 
       int result = interpretInstuction(instruction, renderer, &registers, &timers,
           &inputManager, memory, &PC);
       if (result == -1) running = false;

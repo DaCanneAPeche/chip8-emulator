@@ -217,11 +217,11 @@ int machineLanguageSubroutine()
   return -1;
 }
 
-int newSubroutine(int* PC, int adress)
+void newSubroutine(int* PC, int adress)
 {
   int previousPC = *PC; // PC is incremented before the instruction is executed
   *PC = adress;
-  return pushSubroutine(previousPC); // success is returned as 1, failure as -1
+  pushSubroutine(previousPC); // success is returned as 1, failure as -1
 }
 
 void endOFSubroutine(int* PC)
@@ -294,7 +294,7 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
       break;
 
     case 0x1: jumpTo(combine3Nibbles(nibbles[1], nibbles[2], nibbles[3]), PC); break;
-    case 0x2: return newSubroutine(PC, combine3Nibbles(nibbles[1], nibbles[2], nibbles[3])); break;
+    case 0x2: newSubroutine(PC, combine3Nibbles(nibbles[1], nibbles[2], nibbles[3])); break;
     case 0x3: skipIfVEquals(nibbles[1], combine2Nibbles(nibbles[2], nibbles[3]), registers, PC); break; 
     case 0x4: skipIfVNotEquals(nibbles[1], combine2Nibbles(nibbles[2], nibbles[3]), registers, PC); break; 
     case 0x6: storeInRegisterV(nibbles[1], nibbles[2], nibbles[3], registers); break;

@@ -2,38 +2,53 @@
 #define SUBROUTINES_H
 
 #include <stdio.h>
+#include <stdlib.h>
 
-#define SUBROUTINE_STACK_SIZE 16 // arbitrary number, original stack was 12
-                                 // TODO : Could be set as a type of linked list
+typedef struct {
+  int PC;
+  void* previous;
+  void* next;
+} Subroutine;
 
-int subroutineStack[SUBROUTINE_STACK_SIZE]; 
-int subroutineStackIndex = -1;
 
-int pushSubroutine(int PC)
+Subroutine baseSubroutine = {200, NULL, NULL};
+
+Subroutine* findLastSubroutine()
 {
-  subroutineStackIndex++;
-  
-  if (subroutineStackIndex >= SUBROUTINE_STACK_SIZE)
+  Subroutine* lastSubroutine = &baseSubroutine;
+  while (lastSubroutine->next != NULL)
   {
-    printf("Cannot push subroutine, limit is %i\n", SUBROUTINE_STACK_SIZE);
-    return -1;
+    lastSubroutine = (Subroutine*)lastSubroutine->next;
   }
+  return lastSubroutine;
+}
 
-  subroutineStack[subroutineStackIndex] = PC;
+void pushSubroutine(int PC)
+{
+  Subroutine* newSubroutine = (Subroutine*)malloc(sizeof(Subroutine));
+  newSubroutine->PC = PC;
+  newSubroutine->next = NULL;
 
-  return 1;
+  Subroutine* parentSubroutine = findLastSubroutine();
+  parentSubroutine->next = (void*)newSubroutine;
+  newSubroutine->previous = (void*)parentSubroutine;
 }
 
 int popSubroutine()
 {
-  if (subroutineStackIndex <= -1)
-  {
+  Subroutine* lastSubroutine = findLastSubroutine();
+  int PC = lastSubroutine->PC;
+
+  if (lastSubroutine == &baseSubroutine)
     printf("Cannot pop empty subroutine stack, program's PC will be set to 200\n");
-    return 200;
+
+  else
+  {
+    ((Subroutine*)lastSubroutine->previous)->next = NULL;
+    free(lastSubroutine);
   }
-  int previousIndex = subroutineStackIndex;
-  subroutineStackIndex--;
-  return subroutineStack[previousIndex];
+
+  return PC;
 }
 
 #endif
