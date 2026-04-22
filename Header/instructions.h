@@ -165,6 +165,11 @@ void skipIfKeyIsPressed(uint8_t Vindex, Registers* registers, int* PC)
   if (isKeyPressed(registers->V[Vindex])) *PC += 2;
 }
 
+void skipIfKeyIsNotPressed(uint8_t Vindex, Registers* registers, int* PC)
+{
+  if (!isKeyPressed(registers->V[Vindex])) *PC += 2;
+}
+
 void setVXasVY(uint8_t VX, uint8_t VY, Registers* registers)
 {
   registers->V[VX] = registers->V[VY];
@@ -313,6 +318,7 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
       switch (combine2Nibbles(nibbles[2], nibbles[3]))
       {
         case 0x9E: skipIfKeyIsPressed(nibbles[1], registers, PC); break;
+        case 0xA1: skipIfKeyIsNotPressed(nibbles[1], registers, PC); break;
         default: return unsupported();
       }
       break;
