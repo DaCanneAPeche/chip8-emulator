@@ -37,6 +37,33 @@ uint8_t convertInputSym(SDL_KeyCode keyCode, bool* isInputValid)
   return 0;
 }
 
+uint8_t convertInputScanCode(SDL_Scancode keyCode, bool* isInputValid)
+{
+  switch (keyCode)
+  {
+    case 88: return 0;
+    case 49: return 1;
+    case 50: return 2;
+    case 51: return 3;
+    case 81: return 4;
+    case 87: return 5;
+    case 69: return 6;
+    case 65: return 7;
+    case 83: return 8;
+    case 68: return 9;
+
+    case 90: return 0xa;
+    case 67: return 0xb;
+    case 52: return 0xc;
+    case 82: return 0xd;
+    case 70: return 0xe;
+    case 86: return 0xf;
+
+    default: *isInputValid = false;
+  }
+  return 0;
+}
+
 SDL_KeyCode convertInputSymToSDL(uint8_t key, bool* isInputValid)
 {
   switch (key)

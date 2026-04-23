@@ -158,6 +158,11 @@ void skipIfVNotEquals(uint8_t Vindex, uint8_t value, Registers* registers, int* 
   if (registers->V[Vindex] != value) *PC += 2;
 }
 
+void skipIfRegistersNotEqual(uint8_t VX, uint8_t VY, Registers* registers, int* PC)
+{
+  if (registers->V[VX] != registers->V[VY]) *PC += 2;
+}
+
 void skipIfKeyIsPressed(uint8_t Vindex, Registers* registers, int* PC)
 {
   if (isKeyPressed(registers->V[Vindex])) *PC += 2;
@@ -315,6 +320,10 @@ int interpretInstuction(unsigned short instruction, Renderer* renderer,
         default: return unsupported(); break;
       }
       break;
+
+    case 0x9:
+      if (nibbles[3] != 0) return unsupported();
+      skipIfRegistersNotEqual(nibbles[1], nibbles[2], registers, PC); break;
 
     case 0xA: storeInRegisterI(nibbles[1], nibbles[2], nibbles[3], registers); break;
     case 0xB: jumpToV0Plus(combine3Nibbles(nibbles[1], nibbles[2], nibbles[3]), registers, PC); break;
