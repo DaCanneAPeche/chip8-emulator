@@ -18,7 +18,22 @@ the registers, the pointer counter, the timers...
 Screenshot (with the `chipquarium` exemple) :
 ![Debugger screenshot](./img/debugger.png)
 
+## Input
+The keys are mapped to the following keys in order to match the original layout's key positions.
+The key mapping is implemented using scancodes and thus works on any layout (azerty...),
+following the **key positions** not their names.
+```
+eg. Qwerty layout       Virtual layout
+╔═══╦═══╦═══╦═══╗     ╔═══╦═══╦═══╦═══╗
+║ 1 ║ 2 ║ 3 ║ 4 ║     ║ 1 ║ 2 ║ 3 ║ C ║
+╠═══╬═══╬═══╬═══╣     ╠═══╬═══╬═══╬═══╣
+║ Q ║ W ║ E ║ R ║     ║ 4 ║ 5 ║ 6 ║ D ║
+╠═══╬═══╬═══╬═══╣ --> ╠═══╬═══╬═══╬═══╣
+║ A ║ S ║ D ║ F ║     ║ 7 ║ 8 ║ 9 ║ E ║
+╠═══╬═══╬═══╬═══╣     ╠═══╬═══╬═══╬═══╣
+║ Z ║ X ║ C ║ V ║     ║ A ║ 0 ║ B ║ F ║
+╚═══╩═══╩═══╩═══╝     ╚═══╩═══╩═══╩═══╝
+```
+
 ## Todo
 - Enter program path & zoom after compilation.
-
-- Change input map

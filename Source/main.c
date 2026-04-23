@@ -122,11 +122,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
       else if (event.type == SDL_KEYDOWN)
       {
         bool isKeyValid = true;
-        bool ubfyirbhrfed = true;
-        uint8_t key = convertInputSym(event.key.keysym.sym, &isKeyValid);
-
-        /* printf("%i : %i\n", event.key.keysym.scancode, */
-        /*     convertInputScanCode(event.key.keysym.scancode, &ubfyirbhrfed)); */
+        uint8_t key = convertKeyboardInputToGame(event.key.keysym.scancode, &isKeyValid);
 
         if (isKeyValid && inputManager.waitForInput)
         {
@@ -144,7 +140,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
     {
       unsigned short instruction = readNextInstruction(&PC, memory);
       debugger.instruction = instruction;
-      printf("%i : 0x%04X\n", PC, instruction); 
+      /* printf("%i : 0x%04X\n", PC, instruction); */ 
       int result = interpretInstuction(instruction, renderer, &registers, &timers,
           &inputManager, memory, &PC);
       if (result == -1) running = false;
