@@ -26,6 +26,7 @@ const int INSTRUCTION_TIME_MS = 1; // Time between each instruction
 
 void loadProgram(char* path, uint8_t* program)
 {
+  // NOTE : the char* is given by the user so it's kind of unsafe
   FILE* pFile = fopen(path, "r");
   if (pFile == NULL)
   {
@@ -86,7 +87,7 @@ void fillFontData(uint8_t* memory, uint16_t startingAdress)
   memcpy(memory + startingAdress, fontSet, 80);
 }
 
-void run(Renderer* renderer, AudioManager* audioManager)
+void run(Renderer* renderer, AudioManager* audioManager, char* programPath)
 {
   srand(time(NULL));
 
@@ -100,7 +101,7 @@ void run(Renderer* renderer, AudioManager* audioManager)
   Timers timers = {0, 0};
   InputManager inputManager = {false};
   
-  loadProgram("./exemple_programs/chipquarium/chipquarium.ch8", memory + PROGRAM_START_ADRESS);
+  loadProgram(programPath, memory + PROGRAM_START_ADRESS);
   Debugger debugger = {false, 0, &PC, &registers, &timers, &inputManager};
 
   clearScreen(renderer);
@@ -185,6 +186,14 @@ void run(Renderer* renderer, AudioManager* audioManager)
 int main(int argc, char** argv)
 {
   printf("CHIP-8 emulator\n");
+  if (argc == 1)
+  {
+    printf("Error : missing program path.\n");
+    return 0;
+  }
+
+  else if (argc > 2)
+    printf("Warning : too many arguments were given, only the first one will not be ignored.\n");
 
   if(SDL_Init(SDL_INIT_VIDEO) < 0)
   {
@@ -201,10 +210,10 @@ int main(int argc, char** argv)
   }
 
   Vec2i size = {64, 32};
-  Renderer renderer = initRenderer("Hello, world !", size, ZOOM);
+  Renderer renderer = initRenderer("CHIP-8 emulator", size, ZOOM);
   AudioManager audioManager;
   initAudioManager(&audioManager);
     
-  run(&renderer, &audioManager);
+  run(&renderer, &audioManager, argv[1]);
   destroyRenderer(&renderer);
 }

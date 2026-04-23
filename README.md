@@ -1,15 +1,22 @@
 # chip8-emulator
 
-A chip-8 emulator made for educational purposes in C.
+A [chip-8](https://en.wikipedia.org/wiki/CHIP-8) emulator made for educational purposes in C.
 
 The exemple programs come from [mattmikolay's repository](https://github.com/mattmikolay/chip-8)
 wich was my main source of documentation for this project.
 
 ## Launching
-For now, the program path is hardcoded in `Source/main.c`.
+The project was made using the [xmake](https://xmake.io/) build tool, which needs to be installed.
+Compile the emulator with the `xmake` command.
 
-The project was made using the [xmake](https://xmake.io/) build tool.
-Install it and then use the `xmake` command to compile and run with `xmake run`.
+You can then run a program with with the command :
+`xmake run chip-8 <program-path.ch8>`.
+
+The program path is relative to the executable file (found in the `build` directory),
+so it's probably easier to give the absolute path of the program to be ran,
+except when its in the `exemple_programs` directory : it is soft-linked at compile time, so for its programs
+you can juste give the path as `./exemple_programs/...`. The programs end with the 
+`.ch8` extension.
 
 ## Debugger
 Press the `Space` key to toogle the debugger. It shows information concerning 
@@ -35,5 +42,3 @@ eg. Qwerty layout       Virtual layout
 ╚═══╩═══╩═══╩═══╝     ╚═══╩═══╩═══╩═══╝
 ```
 
-## Todo
-- Enter program path & zoom after compilation.
