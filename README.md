@@ -18,6 +18,10 @@ except when its in the `exemple_programs` directory : it is soft-linked at compi
 you can juste give the path as `./exemple_programs/...`. The programs end with the 
 `.ch8` extension.
 
+### Windows
+On windows, xmake's SDL2 package only works on MinGW. Install the toolchain and run `xmake f -p mingw --sdk=<sdk-path>`
+before compilation.
+
 ## Debugger
 Press the `Space` key to toogle the debugger. It shows information concerning 
 the registers, the pointer counter, the timers...
